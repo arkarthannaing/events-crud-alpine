@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-gray-50">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" />    
+    
+    <title>Events CRUD</title>
+
+</head>
+
+<body class="" x-data = "events()">
+
+    
+
+
+
+    <!-- Event Lists -->
+    <div class="mx-auto h-screen flex mt-10 justify-center px-8">
+        <div class="w-full sm:w-3/4 md:w-1/2">
+
+            <div class="flex justify-end my-5">
+                <!-- Add event button -->
+                <button class="bg-green-600 hover:bg-green-700 text-white rounded-full h-10 px-3 flex justify-center items-center" type="button" @click = "createModal = !createModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    <span> Create Event </span>
+                </button>
+            </div>
+
+            
+                <h1 class="text-2xl text-center mt-10 font-bold text-gray-500" x-show="todos.length == 0"> No Events Found.</h1>
+            
+
+            <template x-for="todo in todos" :key="todo.id">
+                <div class="flex flex-col w-full md:flex-row my-5 bg-white rounded shadow-lg mt-10">
+                    <div class="flex flex-row p-4 font-bold leading-none text-gray-200 uppercase bg-blue-700 md:flex-col md:items-center md:justify-center md:w-1/4">
+                        <div class="md:text-3xl" x-text="getMonth(todo.date)"></div>
+                        <div class="md:text-5xl" x-text="getDay(todo.date)"></div>                    
+                    </div>
+                    <div class="p-5 font-normal text-gray-800 md:w-3/4">
+                        <h1 x-text="todo.title"
+                        class="mb-4 text-2xl font-bold leading-none tracking-tight text-gray-800">
+                            
+                        </h1>
+                        <p x-text="todo.message" class="leading-normal"></p>
+                        <div class="flex flex-row items-center mt-4 text-gray-700">
+                            <div class="w-1/2 flex">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                 <span class="ml-2" x-text="todo.place"></span>
+                            </div>
+                            <div class="w-1/2 flex justify-end">
+
+                                <!-- edit button -->
+                                <button class="bg-blue-600 hover:bg-blue-700 text-white rounded-full h-7 px-5 justify-center items-center" @click="editEvent(todo)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                      </svg>
+                                </button>
+                            
+                                <!-- delete button -->
+                                <button class="bg-red-600 hover:bg-red-700 text-white rounded-full h-7 px-5 justify-center items-center ml-2" @click="deleteEvent(todo)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                                      </svg>                         
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+
+        
+            
+        </div>
+
+        
+    </div>
+
+
+    <!-- Form modal -->
+    <div aria-hidden="true" class="overflow-x-hidden overflow-y-auto fixed h-modal md:h-full top-4 left-0 right-0 md:inset-0 z-50 flex justify-center items-center bg-gray-600" x-show="createModal">
+        <div class="relative w-full max-w-md px-4 h-full md:h-auto">
+            <!-- Modal content -->
+            <div class="bg-white rounded-lg shadow relative dark:bg-gray-700">
+                <div class="flex justify-end p-2">
+                    <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white" @click=" createModal = !createModal ">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>  
+                    </button>
+                </div>
+                <form class="space-y-6 px-6 lg:px-8 pb-4 sm:pb-6 xl:pb-8" action="#" @submit.prevent="formEvent">
+                    <h3 class="text-xl font-medium text-gray-900 dark:text-white"> Create New Event </h3>
+                    <div>
+                        <label for="title" class="text-sm font-medium text-gray-900 block mb-2 dark:text-gray-300">Title</label>
+                        <input type="title" name="title" id="title" x-model="title"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="message" class="text-sm font-medium text-gray-900 block mb-2 dark:text-gray-300">Message</label>
+                        <textarea name="message" id="message" cols="30" rows="5" x-model="message"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"></textarea>
+                    </div>
+                    <div>
+                        <label for="date" class="text-sm font-medium text-gray-900 block mb-2 dark:text-gray-300">Date</label>
+                        <input type="date" name="date" id="date" x-model="date"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="place" class="text-sm font-medium text-gray-900 block mb-2 dark:text-gray-300">Place</label>
+                        <input type="text" name="place" id="place" x-model="place"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
+                    </div>
+                    
+                    <button type="submit" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                        x-text=" editMode ? 'Update' : 'Create' "
+                    > </button>
+                    
+                </form>
+            </div>
+        </div>
+    </div> 
+
+    <!-- Delete modal -->
+    <div aria-hidden="true" class="overflow-x-hidden overflow-y-auto fixed h-modal md:h-full top-4 left-0 right-0 md:inset-0 z-50 flex justify-center items-center bg-gray-600" x-show="delModal">
+        <div class="relative w-full max-w-md px-4 h-full md:h-auto">
+            <!-- Modal content -->
+            <div class="bg-white rounded-lg shadow relative dark:bg-gray-700">
+                <div class="flex justify-end p-2">
+                    <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white" @click=" createModal = !createModal ">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>  
+                    </button>
+                </div>
+
+                <div class="space-y-6 px-6 lg:px-8 pb-4 sm:pb-6 xl:pb-8">
+                    <h3 class="text-xl font-medium text-gray-900 dark:text-white"> Delete Event </h3>
+                    
+                    <p> Are you sure you want to delete ?</p>
+                    
+                    <button class="text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800" @click="delModal = false"    
+                    > No </button>
+                    <button class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800" @click="deleteConfirm()"
+                    > Yes </button>
+                </div>
+                
+            </div>
+        </div>
+    </div> 
+
+
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    
+    <script src="js/app.js"></script>
+
+
+</body>
+
+</html>
