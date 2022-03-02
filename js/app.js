@@ -1,8 +1,8 @@
 window.eventStore = {
-    todos : JSON.parse( localStorage.getItem('event-store') || '[]' ),
+    events : JSON.parse( localStorage.getItem('event-store') || '[]' ),
 
     save(){
-        localStorage.setItem('event-store', JSON.stringify(this.todos));
+        localStorage.setItem('event-store', JSON.stringify(this.events));
     }
 }
 
@@ -11,40 +11,49 @@ window.events = function(){
     return {
 
         ...eventStore,
-        createModal : false,
 
         title : '',
         message : '',
         date : '',
         place : '',
         year : '',
-        
+
+        createModal : false,
         editMode : false,
         delModal : false,
         cachedEvent : null,
-        // test : [],
+        validationError : false,
         oldId : '',
 
         formEvent(){
-            if( this.editMode == true ) this.editForm()
-            this.addEvent()
+            ( this.editMode == true ) ? this.editForm() : this.addEvent() ;
         },
 
         addEvent() {
+
+            if( !this.validation() ) return;
+
             var todo = {};
             todo['id'] = Date.now();
             todo['title'] = this.title;
             todo['message'] = this.message;
             todo['date'] = this.date;
-            todo['place'] = this.title;
+            todo['place'] = this.place;
             todo['year']  = this.getYear(this.date);                  
 
-            if ( Object.values(todo).some(x => x == '') ) return;
+            // if ( Object.values(todo).some(x => x == '') ) return;
 
-            this.todos.push(todo);
+            this.events.push(todo);
             this.save();
             this.resetForm();
             this.createModal = false;
+        },
+
+        validation(){
+            if( this.title && this.message && this.date && this.place ){
+                return true;
+            }
+            this.validationError = true;
         },
 
         editEvent(todo)  {
@@ -60,20 +69,22 @@ window.events = function(){
         },
 
         editForm(){
-            console.log("editing");
-
-            objIndex = this.todos.findIndex((obj => obj.id == this.oldId));
             
-            this.todos[objIndex].title = this.title;
-            this.todos[objIndex].message = this.message;
-            this.todos[objIndex].date = this.date;
-            this.todos[objIndex].place = this.place;
+            if( !this.validation() ) return;
+
+            objIndex = this.events.findIndex((obj => obj.id == this.oldId));            
+            
+            this.events[objIndex].title = this.title;
+            this.events[objIndex].message = this.message;
+            this.events[objIndex].date = this.date;
+            this.events[objIndex].place = this.place;
 
             this.save();
 
             this.createModal = false;
             this.editMode = false;
             this.resetForm();
+
         },
 
         deleteEvent(todo){
@@ -84,8 +95,8 @@ window.events = function(){
         },
 
         deleteConfirm(){
-            let position = this.todos.indexOf(this.cachedEvent);
-            this.todos.splice(position,1);
+            let position = this.events.indexOf(this.cachedEvent);
+            this.events.splice(position,1);
             this.save();
             this.delModal = false;
             this.cachedEvent = null;
@@ -96,6 +107,7 @@ window.events = function(){
             this.message = '';
             this.date = '';
             this.place = '';
+            this.validationError = false;
         },
 
         getMonth(date){
