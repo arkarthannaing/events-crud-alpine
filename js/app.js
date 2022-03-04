@@ -6,17 +6,21 @@ window.eventStore = {
     }
 }
 
-
 window.events = function(){
     return {
 
         ...eventStore,
+
+        filter : 'select',
 
         title : '',
         message : '',
         date : '',
         place : '',
         year : '',
+        
+        yearData : [],
+        selectedYear : 2022,
 
         createModal : false,
         editMode : false,
@@ -24,6 +28,46 @@ window.events = function(){
         cachedEvent : null,
         validationError : false,
         oldId : '',
+
+        get years(){            
+
+            var date = new Date();
+            var currentYear = date.getFullYear();
+            var i = 1;
+
+            for (let y = currentYear; y >= 2015 ; y--) {
+                var data = {};
+                data['id'] = i;                
+                data['year'] = y;
+                this.yearData.push(data);
+                i++;
+            }            
+            return this.yearData;
+            
+        },
+
+        get total(){
+            var num = this.filteredEvents.length;
+            var event =  ( num == 1 ) ? 'Event' : 'Events';
+
+            return `Total ${num} ${event} Found.`;
+        },
+
+        get selectedEvent(){
+            this.yearData = [];
+            return this.events.filter( event => event.year == this.selectedYear );
+        },
+
+        // get currentEvent(){            
+        //     return this.events.filter( event => event.year == '2022' );
+        // },
+
+        get filteredEvents(){
+          return{
+            // current : this.currentEvent,
+            select : this.selectedEvent,
+          }[this.filter];
+        },
 
         formEvent(){
             ( this.editMode == true ) ? this.editForm() : this.addEvent() ;
@@ -50,9 +94,8 @@ window.events = function(){
         },
 
         validation(){
-            if( this.title && this.message && this.date && this.place ){
-                return true;
-            }
+            if( this.title && this.message && this.date && this.place ) return true;
+            
             this.validationError = true;
         },
 
@@ -64,7 +107,7 @@ window.events = function(){
             this.message = todo.message;
             this.date = todo.date;
             this.place = todo.place;
-            this.year = this.getYear(todo.date);
+            
             this.oldId = todo.id;            
         },
 
@@ -78,6 +121,7 @@ window.events = function(){
             this.events[objIndex].message = this.message;
             this.events[objIndex].date = this.date;
             this.events[objIndex].place = this.place;
+            this.events[objIndex].year = this.getYear(this.date);
 
             this.save();
 
@@ -108,6 +152,7 @@ window.events = function(){
             this.date = '';
             this.place = '';
             this.validationError = false;
+            // this.yearData = [];
         },
 
         getMonth(date){

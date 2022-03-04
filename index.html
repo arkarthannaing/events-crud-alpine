@@ -17,7 +17,32 @@
     <div class="mx-auto h-screen flex mt-10 justify-center px-8">
         <div class="w-full sm:w-3/4 md:w-1/2">
 
-            <div class="flex justify-end my-5">
+            <div class="w-full flex justify-between">
+                <div class="">
+                  <select class="form-select appearance-none
+                    block
+                    w-full
+                    px-3
+                    py-1.5
+                    text-base
+                    font-normal
+                    text-gray-700
+                    bg-white bg-clip-padding bg-no-repeat
+                    border border-solid border-gray-300
+                    rounded
+                    transition
+                    ease-in-out
+                    m-0
+                    focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none" aria-label="Default select example"
+                    @change=" filter = 'select' , selectedYear = $event.target.value"
+                    >
+                      <option selected> -- Select Year -- </option>
+                      <template x-for="y in years" :key="y.id">
+                          <option :value="y.year" x-text="y.year"></option>
+                      </template>
+                  </select>
+                </div>
+              
                 <!-- Add event button -->
                 <button class="bg-green-600 hover:bg-green-700 text-white rounded-full h-10 px-5 flex justify-center items-center" type="button" @click = "createModal = !createModal">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -27,10 +52,11 @@
                 </button>
             </div>
             
-            <h1 class="text-2xl text-center mt-10 font-bold text-gray-500" x-show="events.length == 0"> No Events Found.</h1>
-            <h1 class="text-2xl text-center mt-10 font-bold text-gray-500" x-show="events.length > 0" x-text="'Total ' + events.length +' Events Found'"> </h1>
+            <h1 class="text-3xl text-center mt-10 font-bold text-gray-600" x-text="'For ' + selectedYear +' Year'"> </h1>
+            <h1 class="text-1xl text-center mt-10 text-gray-500" x-show="filteredEvents.length == 0"> No Events Found.</h1>            
+            <h1 class="text-1xl text-center mt-10 text-gray-500" x-show="filteredEvents.length > 0" x-text="total"> </h1>
             
-            <template x-for="event in events" :key="event.id">
+            <template x-for="event in filteredEvents" :key="event.id">
                 <div class="flex flex-col w-full md:flex-row my-5 bg-white rounded shadow-lg mt-10">
                     <div class="flex flex-row p-4 font-bold leading-none text-gray-200 uppercase bg-blue-700 md:flex-col md:items-center md:justify-center md:w-1/4">
                         <div class="md:text-3xl" x-text="getMonth(event.date)"></div>
@@ -108,7 +134,7 @@
                     </div>
                     <div>
                         <label for="date" class="text-sm font-medium text-gray-900 block mb-2 dark:text-gray-300">Date</label>
-                        <input type="date" name="date" id="date" x-model="date"
+                        <input type="date" name="date" id="date" x-model="date" min="2015-01-01"
                         class="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white">
                     </div>
                     <div>
